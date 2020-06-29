@@ -7,7 +7,6 @@ import {changeableConstants} from './constants.js';
 export class Movable {
   constructor(context) {
     this.context = context;
-    this._lastTime = Date.now();
     window.requestAnimationFrame(this.update);
   }
 
@@ -18,16 +17,10 @@ export class Movable {
   /**
    * Takes a callback and passes it delta.
    */
-  update = callback => {
-    const currentTime = Date.now();
-    const delta = (currentTime - this._lastTime);
-
+  update = (...callbacks) => {
     // check that callback is function, as RAF can sometimes run before one is passed in child class.
-    if (typeof callback === 'function') {
-      callback(1);
-    }
+    callbacks.forEach(c => typeof c === 'function' && c());
 
-    this._lastTime = currentTime;
-    window.requestAnimationFrame(() => this.update(callback));
+    window.requestAnimationFrame(() => this.update(...callbacks));
   };
 }
