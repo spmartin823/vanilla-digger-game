@@ -1,4 +1,5 @@
 import { Movable } from './movable.js';
+import { changeableConstants } from './constants.js';
 
 export class Player extends Movable {
   multiplier = 10;
@@ -15,7 +16,6 @@ export class Player extends Movable {
     super(context);
     // attach keyState
     this.keyState = keyState;
-    this.context = context;
 
     // initialize movement with inherited update
     this.update(this.move);
@@ -41,22 +41,32 @@ export class Player extends Movable {
 
   /**
    * Takes delta from Movable and uses it to calculate the amount to move.
+   * This handles collisions with the gameboard, but does not handle collisions with other objects.
    */
   move = () => {
     if (this.keyState.up) {
-      this.y -= this.multiplier;
+      this.y = this.y - this.multiplier < 0
+        ? this.y
+        : this.y - this.multiplier;
     }
 
     if (this.keyState.down) {
-      this.y += this.multiplier;
+      this.y = this.y + this.height + this.multiplier > changeableConstants.gameHeight
+        ? this.y
+        : this.y + this.multiplier;
     }
 
     if (this.keyState.right) {
-      this.x += this.multiplier;
+      this.x = this.x + this.multiplier + this.width > changeableConstants.gameWidth
+        ? this.x
+        : this.x + this.multiplier;
+
     }
 
     if (this.keyState.left) {
-      this.x -= this.multiplier;
+      this.x = this.x - this.multiplier < 0
+        ? this.x
+        : this.x - this.multiplier;
     }
     this.render();
   };
